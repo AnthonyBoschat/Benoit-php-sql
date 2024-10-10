@@ -1,41 +1,60 @@
-Changer l'origine du dépôt :
+• Installer PHP : 
 
-	git remote remove origin
-	git remote add origin chemin_nouveau_depot
+sudo apt install php-fpm
+a2enmod proxy_fcgi setenvif
+a2enconf php8.2-fpm
+sudo service apache2 restart
+-> Voir disponibilité sur localhost
 
-Installer les dépendance :
-	Frontend :
-		npm install
-		npm ci
+• Créer fichier index.php (sudo touch index.php) dans /var/www/html et ajouter la ligne : 
 
-	Backend :
-		Créer un nouvel environnement virtuel : python3 -m venv env
-		Activer le nouvel environnement virtuel : source env/bin/activate
-		Installer les dépendances : pip install -r requirements.txt
+<?php
 
-
-	
-		
-
-        Créer une nouvelle base de donnée pour le projet :
-
-		psql -U postgres -h 172.31.215.127 -p 5432
-		CREATE DATABASE BDDname;
+die("coucou");
 
 
-
-		Initialiser un fichier .env a la racine de backend : 
-
-		DB_NAME=BDDname
-		DB_USER=username
-		DB_PASSWORD=password
-		DB_HOST=172.31.215.127
-		DB_PORT=5432
+• Vérifier accessibilité dans localhost/index.php
 
 
+-> Si erreur -> A mettre dans /etc/apache2/sites-enabled en sudo (vim) -> editer "000-default.conf", à rajouter :
+
+<FilesMatch \.php$>
+    SetHandler application/x-httpd-php
+	SetHandler "proxy:unix:/var/run/php/php8.2-fpm.sock|fcgi://localhost"
+</FilesMatch>
+
+i = insertion
+echap = sortir de l'insertion
+:wq = write and quit
+
+/var/run/php/php8.2-fpm.sock
+
+• Redémarrer le serveur apache :
+
+sudo service apache2 restart
+
+• BUG CORS -> Si erreur -> A mettre dans /etc/apache2/sites-enabled en sudo (vim) -> editer "000-default.conf", à rajouter :
+
+<IfModule mod_headers.c>
+    Header add Access-Control-Allow-Origin "*"
+    Header add Access-Control-Allow-Headers "*"
+    Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
+</IfModule>
++
+sudo vim /etc/apache2/apache2.conf
++ ecrire
+LoadModule headers_module modules/mod_headers.so
++
+sudo a2enmod headers
++
+sudo service apache2 restart
 
 
-		Créer un nouvel utilisateur pour accéder à djangoAdmin : 
 
-		source env/bin/activate
-		python manage.py createsuperuser
+
+
+
+
+
+
+
