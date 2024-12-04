@@ -54,6 +54,16 @@ sudo service apache2 restart
 
 
 
+DEMARRER serveur
+
+sudo service apache2 start
+sudo /etc/init.d/php8.2-fpm start
+
+
+
+
+
+
 
 
 

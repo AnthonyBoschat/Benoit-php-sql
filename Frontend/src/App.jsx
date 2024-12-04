@@ -6,9 +6,14 @@ export default function App() {
   const [value, setValue] = useState("")
 
   const sendForm = (e) => {
-    console.log(0)
     e.preventDefault()
-    fetch("http://localhost/index.php")
+    fetch("http://localhost/", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({input:value}) 
+    })
     .then((response) => response.json())
     .then(result => {
       console.log(result)
