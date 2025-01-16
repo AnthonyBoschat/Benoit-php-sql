@@ -1,9 +1,19 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 export default function App() {
   
   const [value, setValue] = useState("")
+  const [datas, setDatas] = useState([])
+
+  useEffect(() => {
+    fetch("http://localhost/getSentence.php")
+    .then(response => response.json())
+    .then(result => {
+      console.log("debug", result)
+      setDatas(result)
+    })
+  }, [])
 
   const sendForm = (e) => {
     e.preventDefault()
@@ -16,7 +26,8 @@ export default function App() {
     })
     .then((response) => response.json())
     .then(result => {
-      console.log(result)
+      setDatas(current => [...current, {id:45, texte:result}])
+      setValue("")
     })
   }
   
@@ -30,7 +41,9 @@ export default function App() {
     </main>
     
     <ol>
-      <li>coucou</li>
+      {datas.map((data, index) => (
+        <li key={index}>{data.texte}</li>
+      ))}
     </ol>
 
     </>
