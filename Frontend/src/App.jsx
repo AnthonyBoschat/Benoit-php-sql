@@ -10,10 +10,13 @@ export default function App() {
     fetch("http://localhost/getSentence.php")
     .then(response => response.json())
     .then(result => {
-      console.log("debug", result)
       setDatas(result)
     })
   }, [])
+
+  useEffect(() => {
+    console.table(datas)
+  }, [datas])
 
   const sendForm = (e) => {
     e.preventDefault()
@@ -26,11 +29,28 @@ export default function App() {
     })
     .then((response) => response.json())
     .then(result => {
-      setDatas(current => [...current, {id:45, texte:result}])
+      console.log(result)
+      setDatas(current => [...current, result])
       setValue("")
     })
   }
-  
+
+  const deleteItem = async (itemID) => {
+    const response = await fetch("http://localhost/deleteItem.php", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({itemID}) 
+    })
+    const result = await response.json()
+    setDatas(datas.filter(data => data.id !== result))
+    console.log("delete result",result)
+
+  }
+
+
+
   return (
     <>
     <main>
@@ -42,7 +62,10 @@ export default function App() {
     
     <ol>
       {datas.map((data, index) => (
-        <li key={index}>{data.texte}</li>
+          <li key={index}>
+            {data.texte}
+            <button onClick={() => deleteItem(data.id)} style={{marginLeft:"1rem"}}>Supprimer</button>  
+          </li>
       ))}
     </ol>
 
